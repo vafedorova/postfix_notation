@@ -36,5 +36,7 @@ int main() {
     else {
         assert(false);
     }
-    cout << root->get_value() << endl;
+    cout << (root != nullptr ? root->get_value() : 0) << endl;
+    cout << prefix_from_tree(root) << endl;
+    cout << postfix_from_tree(root) << endl;
 }
