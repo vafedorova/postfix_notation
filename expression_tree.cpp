@@ -122,18 +122,15 @@ Node *parse_expression_postfix(string &str) {
 Node *parse_expression_infix(string &str);
 
 Node *create_tree_from_infix(const string &s) {
-    string str = s;
+    string str = "(" + s + ")";
     return parse_expression_infix(str);
 }
 
 // str = '-123 - 543'
 Node *parse_expression_infix(string &str) {
     ostringstream stack_os;
-    Node *root = nullptr;
-    Node *curr_node = root;
     stack<Node *> st;
     int i = 0;
-    int sign = 1;
     while (i != str.size()) {
         //cout << i << ": " << str[i] << " stack.size = " << st.size() << endl;
         if (isdigit(str[i])) {
@@ -141,9 +138,7 @@ Node *parse_expression_infix(string &str) {
             digit << str[i];
             while (++i < str.size() && isdigit(str[i]))
                 digit << str[i];
-            Node *value_node = new Node(Operation::value, sign * atoi(digit.str().c_str()));
-            if (sign == -1)
-                sign *= -1;
+            Node *value_node = new Node(Operation::value, atoi(digit.str().c_str()));
             if (st.empty() || st.top() == nullptr) {
                 st.push(value_node);
                 stack_os << "push " << st.top() << "\n";
@@ -166,7 +161,12 @@ Node *parse_expression_infix(string &str) {
         else if (str[i] == '-' || str[i] == '+' || str[i] == '*' || str[i] == '/') {
             if (str[i] == '-') {
                 if (st.empty() || st.top() == nullptr || st.top()->operation != 0) {
-                    sign *= -1;
+                    Node *value_node = new Node(Operation::value, 0);
+                    st.push(value_node);
+                    stack_os << "push " << st.top() << "\n";
+                    Node *op_node = new Node(static_cast<Operation>(str[i]));
+                    st.push(op_node);
+                    stack_os << "push " << st.top() << "\n";
                     i++;
                     continue;
                 }
@@ -218,25 +218,26 @@ Node *parse_expression_infix(string &str) {
         }
         i++;
     }
-    if (st.size() > 1) {
-        assert(st.size() == 3);
-        Node *right = st.top();
-        stack_os << "pop " << st.top() << "\n";
-        assert(!st.empty());
-        st.pop();
-        Node *op_node = st.top();
-        stack_os << "pop " << st.top() << "\n";
-        assert(!st.empty());
-        st.pop();
-        Node *left = st.top();
-        stack_os << "pop " << st.top() << "\n";
-        assert(!st.empty());
-        st.pop();
-        op_node->set_operands(left, right);
-        st.push(op_node);
-        stack_os << "push " << st.top() << "\n";
-    }
+    // if (st.size() > 1) {
+    //     assert(st.size() == 3);
+    //     Node *right = st.top();
+    //     stack_os << "pop " << st.top() << "\n";
+    //     assert(!st.empty());
+    //     st.pop();
+    //     Node *op_node = st.top();
+    //     stack_os << "pop " << st.top() << "\n";
+    //     assert(!st.empty());
+    //     st.pop();
+    //     Node *left = st.top();
+    //     stack_os << "pop " << st.top() << "\n";
+    //     assert(!st.empty());
+    //     st.pop();
+    //     op_node->set_operands(left, right);
+    //     st.push(op_node);
+    //     stack_os << "push " << st.top() << "\n";
+    // }
     // cout << stack_os.str();
+    assert(st.size() == 1);
     return st.top();
 }
 

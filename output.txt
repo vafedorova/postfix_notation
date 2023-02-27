@@ -1,4 +1,4 @@
--8
-prefix: + -12 4 
-postfix: -12 4 + 
-infix: -12 + 4
+10
+prefix: + + + 1 2 3 4 
+postfix: 1 2 + 3 + 4 + 
+infix: ((1 + 2) + 3) + 4
